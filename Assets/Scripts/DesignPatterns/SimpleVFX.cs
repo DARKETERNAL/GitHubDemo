@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(ParticleSystem))]
-public class SimpleVFX : MonoBehaviour
+public class SimpleVFX : MonoBehaviour, IPoolable
 {
     [SerializeField]
     private ParticleSystem ps;
@@ -25,5 +25,19 @@ public class SimpleVFX : MonoBehaviour
         {
             ps = GetComponent<ParticleSystem>();
         }
+    }
+
+    public void PrepareForRetrieve()
+    {
+        gameObject.transform.parent = null;
+    }
+
+    public void PrepareForRecycle(Transform parent)
+    {
+        gameObject.SetActive(false);
+        StopVFX();
+        transform.parent = parent;
+        transform.position = parent.position;
+        transform.rotation = Quaternion.identity;
     }
 }

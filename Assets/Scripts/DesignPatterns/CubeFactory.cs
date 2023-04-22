@@ -5,7 +5,7 @@ public class CubeFactory : MonoBehaviour
     private static CubeFactory instance;
 
     [SerializeField]
-    private GameObject product;
+    private PoolableGameObject product;
 
     private int instanceCount;
 
@@ -27,25 +27,25 @@ public class CubeFactory : MonoBehaviour
         decorator = GetComponent<IDecorator>();
     }
 
-    public GameObject DeliverNewProduct()
+    public PoolableGameObject DeliverNewProduct()
     {
-        GameObject productInstance = null;
+        PoolableGameObject productInstance = null;
 
-        if (decorator == null)
-        {
-            productInstance = Instantiate(product, Vector3.zero, Quaternion.identity);
-        }
-        else
-        {
-            //Instantiate object through decorator
-            productInstance = decorator.ExecuteWithGameObject();
+        productInstance = Instantiate(product, Vector3.zero, Quaternion.identity);
+        //if (decorator == null)
+        //{
+        //}
+        //else
+        //{
+        //    //Instantiate object through decorator
+        //    productInstance = decorator.ExecuteWithGameObject();
 
-            if (decorator.UseCount == 0)
-            {
-                decorator.Destroy();
-                decorator = null;
-            }
-        }
+        //    if (decorator.UseCount == 0)
+        //    {
+        //        decorator.Destroy();
+        //        decorator = null;
+        //    }
+        //}
 
         instanceCount += 1;
         productInstance.name = $"{productInstance.name}{instanceCount}";

@@ -8,5 +8,5 @@ public interface IDecorator
 
     void Destroy();
 
-    GameObject ExecuteWithGameObject();
+    PoolableGameObject ExecuteWithGameObject();
 }

@@ -11,18 +11,14 @@ public class InstanceCreator : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            GameObject currentCube = CubePool.Instance.Retrieve();
-            currentCube.transform.position = Vector3.zero;
-            currentCube.transform.rotation = Quaternion.identity;
-            StartCoroutine(RecycleCubeCR(currentCube));
+            StartCoroutine(RecyclePoolable(PoolFacade.Instance.RetrieveObject(typeof(PoolableGameObject))));
         }
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            SimpleVFX currentVFX = VFXPool.Instance.Retrieve();
-            currentVFX.transform.position = Vector3.zero;
-            currentVFX.transform.rotation = Quaternion.identity;
-            StartCoroutine(RecycleVFXCR(currentVFX));
+            IPoolable currentVFX = PoolFacade.Instance.RetrieveObject(typeof(SimpleVFX));
+            (currentVFX as SimpleVFX).StartVFX();
+            StartCoroutine(RecyclePoolable(currentVFX));
         }
 
         if (Input.GetKeyDown(KeyCode.D))
@@ -31,16 +27,9 @@ public class InstanceCreator : MonoBehaviour
         }
     }
 
-    private IEnumerator RecycleVFXCR(SimpleVFX currentVFX)
-    {
-        currentVFX.StartVFX();
-        yield return new WaitForSeconds(recycleTime);
-        VFXPool.Instance.Recycle(currentVFX);
-    }
-
-    private IEnumerator RecycleCubeCR(GameObject cube)
+    private IEnumerator RecyclePoolable(IPoolable obj)
     {
         yield return new WaitForSeconds(recycleTime);
-        CubePool.Instance.Recycle(cube);
+        PoolFacade.Instance.RecycleObject(obj);
     }
 }

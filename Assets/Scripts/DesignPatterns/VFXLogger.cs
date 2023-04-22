@@ -16,7 +16,7 @@ public class VFXLogger : MonoBehaviour, IDecorator
         StartCoroutine(InstantiateObjectCR());
     }
 
-    public GameObject ExecuteWithGameObject()
+    public PoolableGameObject ExecuteWithGameObject()
     {
         return null;
     }

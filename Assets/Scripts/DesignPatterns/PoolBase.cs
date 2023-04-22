@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class PoolBase<T> : MonoBehaviour
+    where T : IPoolable
 {
     private static PoolBase<T> instance;
 
@@ -21,20 +22,16 @@ public abstract class PoolBase<T> : MonoBehaviour
 
         T target = instances[0];
         instances.Remove(target);
-        ProcessTargetToRetrieve(target);
+        target.PrepareForRetrieve();
 
         return target;
     }
 
     public virtual void Recycle(T target)
     {
-        ProcessTargetToRecycle(target);
+        target.PrepareForRecycle(transform);
         instances.Add(target);
     }
-
-    protected abstract void ProcessTargetToRecycle(T target);
-
-    protected abstract void ProcessTargetToRetrieve(T target);
 
     protected abstract void AddNewInstanceToPool();
 
