@@ -1,35 +1,49 @@
-using System.Collections;
 using UnityEngine;
 
-public class InstanceCreator : MonoBehaviour
+public class InstanceCreator : MonoBehaviour, IObserver
 {
+    public static InstanceCreator Instance { get; private set; }
+
     [SerializeField]
     private float recycleTime = 3F;
 
-    // Update is called once per frame
-    private void Update()
+    private ICommand instantiatePoolableCommand;
+    private ICommand instantiateVFXCommand;
+
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Instance == null)
         {
-            StartCoroutine(RecyclePoolable(PoolFacade.Instance.RetrieveObject(typeof(PoolableGameObject))));
+            Instance = this;
         }
-
-        if (Input.GetKeyDown(KeyCode.V))
+        else
         {
-            IPoolable currentVFX = PoolFacade.Instance.RetrieveObject(typeof(SimpleVFX));
-            (currentVFX as SimpleVFX).StartVFX();
-            StartCoroutine(RecyclePoolable(currentVFX));
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            VFXPool.Instance.gameObject.AddComponent<VFXLogger>();
+            Destroy(this);
         }
     }
 
-    private IEnumerator RecyclePoolable(IPoolable obj)
+    public void InstantiateVFX()
     {
-        yield return new WaitForSeconds(recycleTime);
-        PoolFacade.Instance.RecycleObject(obj);
+        if (instantiateVFXCommand == null)
+        {
+            instantiateVFXCommand = new InstantiateAndRecycleVFXCommand(recycleTime);
+        }
+
+        StartCoroutine(instantiateVFXCommand.Execute());
+    }
+
+    public void InstantiatePoolableGOs()
+    {
+        if (instantiatePoolableCommand == null)
+        {
+            instantiatePoolableCommand = new InstantiateAndRecyclePoolableCommand(recycleTime);
+        }
+
+        StartCoroutine(instantiatePoolableCommand.Execute());
+    }
+
+    public void Notify()
+    {
+        InstantiatePoolableGOs();
     }
 }
